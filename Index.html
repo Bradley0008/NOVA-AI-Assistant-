@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova AI Assistant</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+  <style>
+    /* (Include your neon glass styles here) */
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧠 Meet Nova</h1>
+    <p>Your Hyper‑Professional 3D AI Assistant</p>
+  </header>
+  <model-viewer src="https://models.readyplayer.me/685cb9e4f3e9ba0f88cc661d.glb"
+    alt="Nova" auto-rotate camera-controls shadow-intensity="1"
+    ar ar-modes="webxr scene-viewer quick-look">
+  </model-viewer>
+  <div id="chatbox">
+    <textarea id="userInput" placeholder="Ask Nova..."></textarea>
+    <button onclick="askNova()">💬 Talk to Nova</button>
+    <div id="responseBox">👋 Hi, I'm Nova!</div>
+  </div>
+  <script>
+    async function askNova() {
+      const input = document.getElementById("userInput").value;
+      const resBox = document.getElementById("responseBox");
+      resBox.textContent = "Nova is thinking...";
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are Nova, an AI business assistant." },
+            { role: "user", content: input }
+          ]
+        })
+      });
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content;
+      resBox.textContent = reply;
+      responsiveVoice.speak(reply, "UK English Male");
+    }
+  </script>
+</body>
+</html>
