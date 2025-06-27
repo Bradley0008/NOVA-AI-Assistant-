@@ -1,1 +1,113 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova AI Assistant</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(120deg, #0f0c29, #302b63, #24243e);
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid #444;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 500px;
+      background: transparent;
+      margin-top: 20px;
+    }
+
+    #chatbox {
+      margin: 20px auto;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    textarea {
+      width: 90%;
+      height: 60px;
+      border-radius: 8px;
+      padding: 10px;
+      border: none;
+      resize: none;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      background-color: #3f51b5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #responseBox {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧠 Nova: Your AI Business Coach</h1>
+    <p>Choose your destiny. Build your empire. Nova’s got your back.</p>
+  </header>
+
+  <model-viewer id="novaModel" src="https://models.readyplayer.me/685cb9e4f3e9ba0f88cc661d.glb" auto-rotate camera-controls shadow-intensity="1" ar></model-viewer>
+
+  <div id="chatbox">
+    <textarea id="userInput" placeholder="Ask Nova anything..."></textarea>
+    <br>
+    <button onclick="askNova()">💬 Talk to Nova</button>
+    <div id="responseBox">👋 Hi, I'm Nova! Ask me something.</div>
+  </div>
+
+  <script>
+    async function askNova() {
+      const input = document.getElementById("userInput").value;
+      const resBox = document.getElementById("responseBox");
+      resBox.textContent = "Nova is thinking...";
+
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY" // Replace with your key
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are Nova, a motivating business and life assistant." },
+            { role: "user", content: input }
+          ]
+        })
+      });
+
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content || "Hmm, I couldn’t understand that.";
+      resBox.textContent = reply;
+      responsiveVoice.speak(reply, "UK English Male");
+    }
+  </script>
+</body>
+</html>
